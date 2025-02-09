@@ -76,7 +76,16 @@ const nodemailer = require('nodemailer');
 const app = express();
 app.use(express.static(path.join(__dirname, 'style')));
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: 'https://my-portfoli-website.vercel.app', // Your frontend URL
+  methods: 'GET,POST',
+  allowedHeaders: 'Content-Type',
+}));
+
+app.get('/api/data', (req, res) => {
+  res.json({ message: "CORS issue fixed!" });
+});
+
 
 
 app.get('/', function (req, res) {
