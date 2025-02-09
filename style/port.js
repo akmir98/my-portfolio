@@ -71,9 +71,3 @@ document.getElementById('contect').addEventListener('submit', function (event) {
  document.getElementById('closePopup').addEventListener('click', function () {
    document.getElementById('successMessage').style.display = 'none';
  });
-
-
-
- fetch('https://my-portfolio-backend.vercel.app/api/data')
-  .then(response => response.json())
-  .then(data => console.log(data));
