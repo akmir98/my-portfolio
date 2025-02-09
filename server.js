@@ -73,15 +73,12 @@ dotenv.config(); // Load environment variables
 const nodemailer = require('nodemailer');
 
 const app = express();
-app.use(express.static('style'));
+app.use(express.static(path.join(__dirname, 'style')));
 app.use(bodyparser.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.send('Hello from Vercel!');
-});
 
 app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/port.html');
+   res.sendFile(path.join(__dirname, 'static', 'index.html'));
 });
 
 // Route to download the resume
