@@ -67,6 +67,7 @@
 // });
 const express = require('express');
 const bodyparser = require('body-parser');
+const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 dotenv.config(); // Load environment variables
@@ -75,6 +76,7 @@ const nodemailer = require('nodemailer');
 const app = express();
 app.use(express.static(path.join(__dirname, 'style')));
 app.use(bodyparser.urlencoded({ extended: true }));
+app.use(cors());
 
 
 app.get('/', function (req, res) {
