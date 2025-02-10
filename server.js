@@ -89,7 +89,7 @@ app.get('/api/data', (req, res) => {
 
 
 app.get('/', function (req, res) {
-   res.sendFile(path.join(__dirname, 'static', 'index.html'));
+   res.sendFile(path.join(__dirname, 'style', 'index.html'));
 });
 
 // Route to download the resume
