@@ -188,7 +188,7 @@ app.use(cors());
 
 // Basic routes
 app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, 'port.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/resume', function (req, res) {
