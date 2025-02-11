@@ -7,7 +7,7 @@
         },
         {
             "src": "style/**",
-            "use": "@vercel/static"
+            "use": "@vercel/style"
         }
     ],
     "routes": [
