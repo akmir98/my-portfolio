@@ -1,22 +1,37 @@
 // const express = require('express');
 // const bodyparser = require('body-parser');
-// const path = require('path'); // Add this line
+// const cors = require('cors');
 // const dotenv = require('dotenv');
+// const path = require('path');
 // dotenv.config(); // Load environment variables
 // const nodemailer = require('nodemailer');
 
-
 // const app = express();
-// app.use(express.static('style'));
+// app.use(express.static(path.join(__dirname, 'style')));
 // app.use(bodyparser.urlencoded({ extended: true }));
+// app.use(cors({
+//   origin: 'https://my-portfoli-website.vercel.app', // Your frontend URL
+//   methods: 'GET,POST',
+//   allowedHeaders: 'Content-Type',
+// }));
 
-
-// app.get('/', function (req, res) {
-//   res.sendFile(__dirname + '/port.html');
+// app.get('/api/data', (req, res) => {
+//   res.json({ message: "CORS issue fixed!" });
 // });
 
+
+
+// // app.get('/', function (req, res) {
+// //    res.sendFile(path.join(__dirname, 'style', 'index.html'));
+// // });
+
+// app.get('/', function (req, res) {
+//   res.sendFile(path.join(__dirname, 'style/index.html'));
+// });
+
+// // Route to download the resume
 // app.get('/resume', function (req, res) {
-//   const filePath = path.join(__dirname, 'style/resume.pdf'); // Path to the file on your server
+//   const filePath = path.join(__dirname, 'style/resume.pdf'); // Path to the file
 //   const suggestedFileName = 'Your_Resume.pdf'; // Name suggested to the user
 //   res.download(filePath, suggestedFileName, (err) => {
 //     if (err) {
@@ -29,88 +44,6 @@
 // console.log('Email User:', process.env.EMAIL_USER);
 // console.log('Email Pass:', process.env.EMAIL_PASS);
 // console.log('Port:', process.env.PORT);
-
-// app.post('/', function (req, res) {
-//   const comn = req.body.Message;
-//   const na = req.body.Fullname;
-
-//   let transporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//       user: process.env.EMAIL_USER,
-//       pass: process.env.EMAIL_PASS,
-//     },
-//   });
-
-//   var mailOptions = {
-//     from: process.env.EMAIL_USER,
-//     to: req.body.username,
-//     cc: process.env.EMAIL_USER,
-//     subject: 'Thanks for your feedback ' + na,
-//     text: 'Thanks for your message: ' + comn,
-//   };
-
-//   transporter.sendMail(mailOptions, function (error, info) {
-//     if (error) {
-//       console.log(error);
-//       res.status(500).send('Error sending email');
-//     } else {
-//       res.redirect('/');
-//       console.log('Email sent: ' + info.response);
-//     }
-//   });
-// });
-
-// const PORT = process.env.PORT || 4000;
-// app.listen(PORT, function () {
-//   console.log('Server is running on port ' + PORT);
-// });
-const express = require('express');
-const bodyparser = require('body-parser');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
-dotenv.config(); // Load environment variables
-const nodemailer = require('nodemailer');
-
-const app = express();
-app.use(express.static(path.join(__dirname, 'style')));
-app.use(bodyparser.urlencoded({ extended: true }));
-app.use(cors({
-  origin: 'https://my-portfoli-website.vercel.app', // Your frontend URL
-  methods: 'GET,POST',
-  allowedHeaders: 'Content-Type',
-}));
-
-app.get('/api/data', (req, res) => {
-  res.json({ message: "CORS issue fixed!" });
-});
-
-
-
-// app.get('/', function (req, res) {
-//    res.sendFile(path.join(__dirname, 'style', 'index.html'));
-// });
-
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, 'style/index.html'));
-});
-
-// Route to download the resume
-app.get('/resume', function (req, res) {
-  const filePath = path.join(__dirname, 'style/resume.pdf'); // Path to the file
-  const suggestedFileName = 'Your_Resume.pdf'; // Name suggested to the user
-  res.download(filePath, suggestedFileName, (err) => {
-    if (err) {
-      console.error('Error downloading file:', err);
-      res.status(500).send('Error downloading file');
-    }
-  });
-});
-
-console.log('Email User:', process.env.EMAIL_USER);
-console.log('Email Pass:', process.env.EMAIL_PASS);
-console.log('Port:', process.env.PORT);
 
 // 
 // app.post('/', function (req, res) {
@@ -173,136 +106,84 @@ console.log('Port:', process.env.PORT);
 //     }
 //   });
 // })
+
+const express = require('express');
+const bodyparser = require('body-parser');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config();
+const nodemailer = require('nodemailer');
+
+const app = express();
+app.use(express.static(path.join(__dirname, 'style')));
+app.use(bodyparser.urlencoded({ extended: true }));
+app.use(cors());
+
+// Basic routes
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/resume', function (req, res) {
+  const filePath = path.join(__dirname, 'style/resume.pdf');
+  const suggestedFileName = 'Your_Resume.pdf';
+  res.download(filePath, suggestedFileName, (err) => {
+    if (err) {
+      console.error('Error downloading file:', err);
+      res.status(500).send('Error downloading file');
+    }
+  });
+});
+
+// Email handling
 app.post('/', async function (req, res) {
   try {
-    // Log the incoming request data
-    console.log('Form submission received:', req.body);
+    const { Fullname, emailadress, number, EmailSubject, Message } = req.body;
 
-    const transporter = nodemailer.createTransport({
+    // Create transporter
+    let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS, // Make sure this is an App Password
+      },
     });
 
-    // Test the connection
-    await transporter.verify();
-    console.log('SMTP connection verified');
-
+    // Email options
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: req.body.emailadress,
+      to: emailadress, // Using the email from the form
       cc: process.env.EMAIL_USER,
-      subject: `Contact Form: ${req.body.EmailSubject}`,
+      subject: `Portfolio Contact: ${EmailSubject}`,
       text: `
-        Name: ${req.body.Fullname}
-        Email: ${req.body.emailadress}
-        Phone: ${req.body.number}
-        Subject: ${req.body.EmailSubject}
-        Message: ${req.body.Message}
-      `
+        New contact form submission:
+        
+        Name: ${Fullname}
+        Email: ${emailadress}
+        Phone: ${number}
+        Subject: ${EmailSubject}
+        
+        Message:
+        ${Message}
+      `,
     };
 
-    // Log the email options
-    console.log('Attempting to send email with options:', {
-      to: mailOptions.to,
-      subject: mailOptions.subject
-    });
-
+    // Send email
     const info = await transporter.sendMail(mailOptions);
     console.log('Email sent successfully:', info.response);
     res.status(200).json({ message: 'Email sent successfully' });
 
   } catch (error) {
-    console.error('Detailed error:', error);
-    res.status(500).json({
+    console.error('Error sending email:', error);
+    res.status(500).json({ 
       error: 'Failed to send email',
-      details: error.message
+      details: error.message 
     });
   }
 });
+
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, function () {
-  console.log('Server is running on port ' + PORT);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-// const express = require('express');
-// const bodyparser = require('body-parser');
-// const cors = require('cors');
-// const dotenv = require('dotenv');
-// const path = require('path');
-// dotenv.config();
-// const nodemailer = require('nodemailer');
-
-// const app = express();
-// app.use(express.static(path.join(__dirname, 'style')));
-// app.use(bodyparser.urlencoded({ extended: true }));
-// app.use(cors());
-
-// // Basic routes
-// app.get('/', function (req, res) {
-//   res.sendFile(path.join(__dirname, 'index.html'));
-// });
-
-// app.get('/resume', function (req, res) {
-//   const filePath = path.join(__dirname, 'style/resume.pdf');
-//   const suggestedFileName = 'Your_Resume.pdf';
-//   res.download(filePath, suggestedFileName, (err) => {
-//     if (err) {
-//       console.error('Error downloading file:', err);
-//       res.status(500).send('Error downloading file');
-//     }
-//   });
-// });
-
-// // Email handling
-// app.post('/', async function (req, res) {
-//   try {
-//     const { Fullname, emailadress, number, EmailSubject, Message } = req.body;
-
-//     // Create transporter
-//     let transporter = nodemailer.createTransport({
-//       service: 'gmail',
-//       auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS, // Make sure this is an App Password
-//       },
-//     });
-
-//     // Email options
-//     const mailOptions = {
-//       from: process.env.EMAIL_USER,
-//       to: emailadress, // Using the email from the form
-//       cc: process.env.EMAIL_USER,
-//       subject: `Portfolio Contact: ${EmailSubject}`,
-//       text: `
-//         New contact form submission:
-        
-//         Name: ${Fullname}
-//         Email: ${emailadress}
-//         Phone: ${number}
-//         Subject: ${EmailSubject}
-        
-//         Message:
-//         ${Message}
-//       `,
-//     };
-
-//     // Send email
-//     const info = await transporter.sendMail(mailOptions);
-//     console.log('Email sent successfully:', info.response);
-//     res.status(200).json({ message: 'Email sent successfully' });
-
-//   } catch (error) {
-//     console.error('Error sending email:', error);
-//     res.status(500).json({ 
-//       error: 'Failed to send email',
-//       details: error.message 
-//     });
-//   }
-// });
-
-// const PORT = process.env.PORT || 4000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
