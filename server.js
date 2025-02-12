@@ -41,6 +41,8 @@ app.get('/resume', function (req, res) {
     }
   });
 });
+console.log("📩 EMAIL_USER:", process.env.EMAIL_USER ? "Loaded" : "Not Found");
+console.log("🔑 EMAIL_PASS:", process.env.EMAIL_PASS ? "Loaded" : "Not Found");
 
 // console.log('Email User:', process.env.EMAIL_USER);
 // console.log('Email Pass:', process.env.EMAIL_PASS);
@@ -49,51 +51,77 @@ app.get('/resume', function (req, res) {
 if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
   console.error("⚠️ Missing EMAIL_USER or EMAIL_PASS in .env file!");
 }
+app.get('/test-email', async (req, res) => {
+  try {
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-app.post('/send-email', function (req, res) {
-  // Extract form data
-  const fullName = req.body.Fullname;
-  const emailAddress = req.body.emailadress;
-  const phoneNumber = req.body.number;
-  const emailSubject = req.body.EmailSubject;
-  const message = req.body.Message;
-
-  // Log form data to the console (for debugging)
-  console.log('Form Data:', {
-    fullName,
-    emailAddress,
-    phoneNumber,
-    emailSubject,
-    message,
-  });
-
-  // Create a Nodemailer transporter
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  // Log transporter configuration
-  console.log('Transporter configured with:', {
-    service: 'gmail',
-    user: process.env.EMAIL_USER,
-  });
-
-  // Email options
-  var mailOptions = {
-      from: process.env.EMAIL_USER, // Sender address
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER, // Send to yourself
-      replyTo: emailAddress, // Allows you to reply to the user
-      subject: `Portfolio Contact: ${emailSubject}`, // Email subject
-      text: `
-        Full Name: ${fullName}
-        Email Address: ${emailAddress}
-        Phone Number: ${phoneNumber}
-        Message: ${message}
-      `, // Email body
+      subject: 'Test Email from Vercel',
+      text: 'If you receive this, your email setup works!',
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent:', info.response);
+    res.status(200).json({ message: 'Email sent successfully!' });
+
+  } catch (error) {
+    console.error('❌ Error sending email:', error);
+    res.status(500).json({ error: 'Failed to send email', details: error.message });
+  }
+});
+
+// app.post('/send-email', function (req, res) {
+//   // Extract form data
+//   const fullName = req.body.Fullname;
+//   const emailAddress = req.body.emailadress;
+//   const phoneNumber = req.body.number;
+//   const emailSubject = req.body.EmailSubject;
+//   const message = req.body.Message;
+
+//   // Log form data to the console (for debugging)
+//   console.log('Form Data:', {
+//     fullName,
+//     emailAddress,
+//     phoneNumber,
+//     emailSubject,
+//     message,
+//   });
+
+//   // Create a Nodemailer transporter
+//   let transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//       user: process.env.EMAIL_USER,
+//       pass: process.env.EMAIL_PASS,
+//     },
+//   });
+
+//   // Log transporter configuration
+//   console.log('Transporter configured with:', {
+//     service: 'gmail',
+//     user: process.env.EMAIL_USER,
+//   });
+
+//   // Email options
+//   var mailOptions = {
+//       from: process.env.EMAIL_USER, // Sender address
+//       to: process.env.EMAIL_USER, // Send to yourself
+//       replyTo: emailAddress, // Allows you to reply to the user
+//       subject: `Portfolio Contact: ${emailSubject}`, // Email subject
+//       text: `
+//         Full Name: ${fullName}
+//         Email Address: ${emailAddress}
+//         Phone Number: ${phoneNumber}
+//         Message: ${message}
+//       `, // Email body
   
     
     // from: process.env.EMAIL_USER, // Sender address
@@ -106,22 +134,22 @@ app.post('/send-email', function (req, res) {
     //   Phone Number: ${phoneNumber}
     //   Message: ${message}
     // `, // Email body
-  };
+//   };
 
-  // Log email options
-  console.log('Email Options:', mailOptions);
+//   // Log email options
+//   console.log('Email Options:', mailOptions);
 
-  // Send the email
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log('Error sending email:', error);
-      res.status(500).send('Error sending email');
-    } else {
-      console.log('Email sent:', info.response);
-      res.redirect('/');
-    }
-  });
-})
+//   // Send the email
+//   transporter.sendMail(mailOptions, function (error, info) {
+//     if (error) {
+//       console.log('Error sending email:', error);
+//       res.status(500).send('Error sending email');
+//     } else {
+//       console.log('Email sent:', info.response);
+//       res.redirect('/');
+//     }
+//   });
+// })
 
 // const express = require('express');
 // const bodyparser = require('body-parser');
