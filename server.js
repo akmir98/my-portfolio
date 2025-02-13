@@ -109,23 +109,9 @@ console.log('✅ Email User:', process.env.EMAIL_USER);
 console.log('✅ Email Pass:', process.env.EMAIL_PASS ? 'Loaded' : 'Not Found');
 console.log('✅ Port:', process.env.PORT || 3000);
 
-app.post('/send-email', function (req, res) {
-  // Extract form data
-  const FullName = req.body.Fullname;
-  const emailAddress = req.body.emailadress;
-  const phoneNumber = req.body.number;
-  const emailSubject = req.body.EmailSubject;
-  const message = req.body.Message;
+// app.post('/send-email', function (req, res) {
+  console.log('📩 Form Data Received:', req.body);
 
-  console.log('📩 Form Data Received:', {
-    FullName,
-    emailAddress,
-    phoneNumber,
-    emailSubject,
-    message,
-  });
-
-  // Create a Nodemailer transporter
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -139,25 +125,23 @@ app.post('/send-email', function (req, res) {
     user: process.env.EMAIL_USER,
   });
 
-  // Email options
   let mailOptions = {
     from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER, // ✅ Send to yourself
-    replyTo: emailAddress, // ✅ Allows replying to the user
-    subject: `Portfolio Contact: ${emailSubject}`,
+    to: process.env.EMAIL_USER,
+    replyTo: req.body.emailadress,
+    subject: `Portfolio Contact: ${req.body.EmailSubject}`,
     text: `
-      Full Name: ${FullName}
-      Email Address: ${emailAddress}
-      Phone Number: ${phoneNumber}
+      Full Name: ${req.body.Fullname}
+      Email Address: ${req.body.emailadress}
+      Phone Number: ${req.body.number}
 
       Message:
-      ${message}
+      ${req.body.Message}
     `,
   };
 
   console.log('📤 Email Options:', mailOptions);
 
-  // Send the email
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.error('❌ Error sending email:', error);
@@ -167,8 +151,6 @@ app.post('/send-email', function (req, res) {
       res.status(200).json({ message: 'Email sent successfully' });
     }
   });
-});
-
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
