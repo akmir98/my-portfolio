@@ -125,20 +125,33 @@ console.log('✅ Port:', process.env.PORT || 3000);
     user: process.env.EMAIL_USER,
   });
 
-  let mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER,
-    replyTo: req.body.emailadress,
-    subject: `Portfolio Contact: ${req.body.EmailSubject}`,
-    text: `
-      Full Name: ${req.body.Fullname}
-      Email Address: ${req.body.emailadress}
-      Phone Number: ${req.body.number}
+  // let mailOptions = {
+  //   from: process.env.EMAIL_USER,
+  //   to: process.env.EMAIL_USER,
+  //   replyTo: req.body.emailadress,
+  //   subject: `Portfolio Contact: ${req.body.EmailSubject}`,
+  //   text: `
+  //     Full Name: ${req.body.Fullname}
+  //     Email Address: ${req.body.emailadress}
+  //     Phone Number: ${req.body.number}
 
-      Message:
-      ${req.body.Message}
-    `,
-  };
+  //     Message:
+  //     ${req.body.Message}
+  //   `,
+  // };
+const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER,  // Sends email to yourself
+    replyTo: emailadress,  // Allows direct reply to sender
+    subject: `New Contact: ${emailSubject}`,
+    html: `
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${Fullname}</p>
+        <p><strong>Email:</strong> ${emailadress}</p>
+        <p><strong>Phone:</strong> ${number}</p>
+        <p><strong>Message:</strong> ${Message}</p>
+    `
+};
 
   console.log('📤 Email Options:', mailOptions);
 

@@ -102,3 +102,7 @@ document.getElementById('contect').addEventListener('submit', function (event) {
        alert('Failed to send message. Please try again.');
      });
  });
+//  ===========impro ===============
+function validateEmail(email) {
+   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
