@@ -103,7 +103,7 @@ document.getElementById('contect').addEventListener('submit', function (event) {
      });
  });
 //  ===========impro ===============
-document.getElementsByClassName(".contect").addEventListener("submit", function (event) {
+document.getElementById("contect").addEventListener("submit", function (event) {
    const emailInput = document.getElementById("Email Address").value;
 
    if (!validateEmail(emailInput)) {
@@ -111,7 +111,3 @@ document.getElementsByClassName(".contect").addEventListener("submit", function 
        event.preventDefault(); // Stop form submission
    }
 });
-
-function validateEmail(email) {
-   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
