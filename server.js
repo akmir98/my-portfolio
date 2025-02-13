@@ -109,7 +109,7 @@ console.log('✅ Email User:', process.env.EMAIL_USER);
 console.log('✅ Email Pass:', process.env.EMAIL_PASS ? 'Loaded' : 'Not Found');
 console.log('✅ Port:', process.env.PORT || 3000);
 
-// app.post('/send-email', function (req, res) {
+  app.post('/send-email', function (req, res) {
   console.log('📩 Form Data Received:', req.body);
 
   let transporter = nodemailer.createTransport({
@@ -151,6 +151,7 @@ console.log('✅ Port:', process.env.PORT || 3000);
       res.status(200).json({ message: 'Email sent successfully' });
     }
   });
+});
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
