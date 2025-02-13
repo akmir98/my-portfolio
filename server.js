@@ -84,7 +84,7 @@ app.use(express.static(path.join(__dirname, 'style')));
 app.use(bodyparser.json()); // ✅ Added JSON support
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(cors({
-  origin: 'https://my-portfoli-website.vercel.app', // Your frontend URL
+  origin: 'https://my-portfoli-website.vercel.app', // Replace with your frontend URL
   methods: 'GET,POST',
   allowedHeaders: 'Content-Type',
 }));
@@ -169,7 +169,7 @@ app.post('/send-email', function (req, res) {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

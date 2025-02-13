@@ -71,3 +71,34 @@ document.getElementById('contect').addEventListener('submit', function (event) {
  document.getElementById('closePopup').addEventListener('click', function () {
    document.getElementById('successMessage').style.display = 'none';
  });
+
+
+
+
+ document.querySelector('form').addEventListener('submit', function (event) {
+   event.preventDefault(); // Prevent the default form submission
+ 
+   // Log form data for debugging
+   const formData = new FormData(event.target);
+   const data = Object.fromEntries(formData.entries());
+   console.log('Form Data:', data);
+ 
+   // Send the form data to the backend
+   fetch('/send-email', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+     },
+     body: JSON.stringify(data),
+   })
+     .then((response) => response.json())
+     .then((result) => {
+       console.log('Success:', result);
+       // Show success message
+       document.getElementById('successMessage').style.display = 'block';
+     })
+     .catch((error) => {
+       console.error('Error:', error);
+       alert('Failed to send message. Please try again.');
+     });
+ });
