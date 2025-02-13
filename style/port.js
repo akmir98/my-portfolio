@@ -103,7 +103,7 @@ document.getElementById('contect').addEventListener('submit', function (event) {
      });
  });
 //  ===========impro ===============
-document.getElementById("contact").addEventListener("submit", function (event) {
+document.getElementsByClassName(".contect").addEventListener("submit", function (event) {
    const emailInput = document.getElementById("Email Address").value;
 
    if (!validateEmail(emailInput)) {
