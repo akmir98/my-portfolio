@@ -70,102 +70,61 @@
 //  // Close the pop-up when the close button is clicked
 //  document.getElementById('closePopup').addEventListener('click', function () {
 //    document.getElementById('successMessage').style.display = 'none';
-//  });
+// Form Data: Object
 const express = require('express');
 const bodyparser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const path = require('path');
-dotenv.config(); // Load environment variables
 const nodemailer = require('nodemailer');
+dotenv.config();
 
 const app = express();
-app.use(express.static(path.join(__dirname, 'style')));
-app.use(bodyparser.json()); // ✅ Added JSON support
-app.use(bodyparser.urlencoded({ extended: true }));
-app.use(cors({
-  origin: 'https://my-portfoli-website.vercel.app', // Replace with your frontend URL
-  methods: 'GET,POST',
-  allowedHeaders: 'Content-Type',
-}));
+app.use(bodyparser.json()); // Ensure JSON support
+app.use(cors());
 
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, 'style/index.html'));
-});
+app.post('/send-email', async (req, res) => {
+    try {
+        console.log("📩 Form Data Received:", req.body); // Log incoming data
 
-// Route to download the resume
-app.get('/resume', function (req, res) {
-  const filePath = path.join(__dirname, 'style/resume.pdf');
-  const suggestedFileName = 'Your_Resume.pdf';
-  res.download(filePath, suggestedFileName, (err) => {
-    if (err) {
-      console.error('Error downloading file:', err);
-      res.status(500).send('Error downloading file');
+        const { Fullname, emailadress, number, EmailSubject, Message } = req.body;
+
+        if (!Fullname || !emailadress || !number || !EmailSubject || !Message) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_USER, // Sending to yourself
+            subject: `Portfolio Contact: ${EmailSubject}`,
+            html: `
+                <h2>New Contact Form Submission</h2>
+                <p><strong>Name:</strong> ${Fullname}</p>
+                <p><strong>Email:</strong> ${emailadress}</p>
+                <p><strong>Phone:</strong> ${number}</p>
+                <p><strong>Message:</strong> ${Message}</p>
+            `,
+        };
+
+        console.log("📤 Email Options:", mailOptions);
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log("✅ Email sent:", info.response);
+
+        res.status(200).json({ message: "Email sent successfully" });
+
+    } catch (error) {
+        console.error("❌ Error sending email:", error);
+        res.status(500).json({ error: "Failed to send email", details: error.message });
     }
-  });
 });
 
-console.log('✅ Email User:', process.env.EMAIL_USER);
-console.log('✅ Email Pass:', process.env.EMAIL_PASS ? 'Loaded' : 'Not Found');
-console.log('✅ Port:', process.env.PORT || 3000);
-
-  app.post('/send-email', function (req, res) {
-  console.log('📩 Form Data Received:', req.body);
-
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  console.log('✅ Transporter configured with:', {
-    service: 'gmail',
-    user: process.env.EMAIL_USER,
-  });
-
-  // let mailOptions = {
-  //   from: process.env.EMAIL_USER,
-  //   to: process.env.EMAIL_USER,
-  //   replyTo: req.body.emailadress,
-  //   subject: `Portfolio Contact: ${req.body.EmailSubject}`,
-  //   text: `
-  //     Full Name: ${req.body.Fullname}
-  //     Email Address: ${req.body.emailadress}
-  //     Phone Number: ${req.body.number}
-
-  //     Message:
-  //     ${req.body.Message}
-  //   `,
-  // };
-const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER,  // Sends email to yourself
-    replyTo: emailadress,  // Allows direct reply to sender
-    subject: `New Contact: ${emailSubject}`,
-    html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${Fullname}</p>
-        <p><strong>Email:</strong> ${emailadress}</p>
-        <p><strong>Phone:</strong> ${number}</p>
-        <p><strong>Message:</strong> ${Message}</p>
-    `
-};
-
-  console.log('📤 Email Options:', mailOptions);
-
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.error('❌ Error sending email:', error);
-      res.status(500).json({ error: 'Failed to send email', details: error.message });
-    } else {
-      console.log('✅ Email sent:', info.response);
-      res.status(200).json({ message: 'Email sent successfully' });
-    }
-  });
-});
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
