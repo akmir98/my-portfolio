@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 // Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'style')));
 
 // Parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
