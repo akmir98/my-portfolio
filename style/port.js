@@ -216,7 +216,7 @@
 
 
 // ==============scroll navbar icon===========================
-// 
+
 // Toggle Navbar
 let menuIcon = document.querySelector('#menu-icon');
 let nav = document.querySelector('.navbar');
